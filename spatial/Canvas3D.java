@@ -21,6 +21,10 @@ public class Canvas3D extends Canvas {
     private double[][] ang = new double[2][3];
     private double[][] rot = new double[3][3];
 
+    public boolean drawAxes = true;
+    public boolean drawOctants = true;
+    public boolean drawPoints = true;
+
     public Canvas3D() {
 
     }
