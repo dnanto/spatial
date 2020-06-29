@@ -26,6 +26,10 @@ public class Sphere implements Shape3D {
         return this.z;
     }
 
+    public Point3D getPoint() {
+        return new Point3D(this.x, this.y, this.z);
+    }
+
     @Override
     public Box getBounds() {
         double d = 2 * r;
