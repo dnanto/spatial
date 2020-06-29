@@ -1,3 +1,5 @@
+package spatial;
+
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.Shape;
@@ -16,8 +18,8 @@ public class QuadTree {
 
     private QuadTree nw;
     private QuadTree ne;
-    private QuadTree sw;
     private QuadTree se;
+    private QuadTree sw;
 
     private boolean subdivided = false;
 
@@ -107,7 +109,7 @@ public class QuadTree {
     public static void main(String[] args) {
         long seed = 1;
 
-        int N = 100;
+        int N = 1000;
 
         int n = 4;
         int w = 1000;

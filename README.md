@@ -1,1 +1,3 @@
 # spatial
+
+trying out some spatial data structures with a quick-and-dirty 3D engine...
