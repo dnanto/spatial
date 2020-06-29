@@ -26,7 +26,7 @@ public class OctTree {
 
     public void subdivide() {
         double x = this.b.getX(), y = this.b.getY(), z = this.b.getZ();
-        double w = this.b.getWidth() / 2, h = this.b.getHeight() / 2, d = this.b.getDepth();
+        double w = this.b.getWidth() / 2, h = this.b.getHeight() / 2, d = this.b.getDepth() / 2;
         this.nw1 = new OctTree(new Box(x, y, z, w, h, d), this.n);
         this.ne1 = new OctTree(new Box(x + w, y, z, w, h, d), this.n);
         this.se1 = new OctTree(new Box(x + w, y + h, z, w, h, d), this.n);
@@ -112,14 +112,6 @@ public class OctTree {
 
     public void octants(LinkedList<Box> boxes) {
         if (this.subdivided) {
-            boxes.add(nw1.b);
-            boxes.add(ne1.b);
-            boxes.add(se1.b);
-            boxes.add(sw1.b);
-            boxes.add(nw2.b);
-            boxes.add(ne2.b);
-            boxes.add(se2.b);
-            boxes.add(sw2.b);
             this.nw1.octants(boxes);
             this.ne1.octants(boxes);
             this.se1.octants(boxes);
@@ -128,6 +120,9 @@ public class OctTree {
             this.ne2.octants(boxes);
             this.se2.octants(boxes);
             this.sw2.octants(boxes);
+        }
+        else {
+            boxes.add(this.b);
         }
     }
 

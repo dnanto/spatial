@@ -7,11 +7,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JFrame;
-import java.awt.AlphaComposite;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
@@ -23,7 +21,7 @@ public class Main {
         int w = 1000, h = 1000, d = 1000;
         int r = 4;
         int n = 4;
-        int N = 10000;
+        int N = 1000;
 
         // generate random points
         Random prng = new Random(seed);
@@ -58,9 +56,9 @@ public class Main {
                 for (Line2D.Double line : this.project_lines(this.getAxes()))
                     G.draw(line);
                 // plot octants
-                // for (Box box : octants)
-                //     for (Line2D.Double line : this.project_lines(box.lines()))
-                //         G.draw(line);
+                for (Box box : octants)
+                    for (Line2D.Double line : this.project_lines(box.lines()))
+                        G.draw(line);
                 // plot points
                 for (Point2D.Double p : this.project_points(Arrays.stream(pts).map(p -> p.getPoint()).collect(Collectors.toList())))
                     G.fill(new Ellipse2D.Double(p.x, p.y, r, r));
