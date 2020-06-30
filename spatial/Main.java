@@ -3,7 +3,6 @@ package spatial;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -15,41 +14,20 @@ import java.awt.event.KeyEvent;
 
 public class Main {
 
+    private static OctTree tree;
+
+    private static final int w = 1000, h = 1000, d = 1000;
+
+    private static final int r = 4;
+
+    private static final int n = 1;
+
+    private static final int N = 1000;
+
     public static void main(String[] args) {
-        int w = 1000, h = 1000, d = 1000;
-        int r = 4;
-        int n = 1;
-        int N = 1000;
-
-        // generate random points
-        Random prng = new Random();
-        Sphere[] pts = new Sphere[N];
-        double x = prng.nextDouble() * w + 1, y = prng.nextDouble() * h + 1, z = prng.nextDouble() * d + 1;
-        double dx = 10, dy = 10, dz = 10;
-
-        for (int i = 0; i < N; i++) {
-            pts[i] = new Sphere(x, y, z, r);
-            x = (x + (prng.nextBoolean() ? dx : -dx)) % w;
-            y = (y + (prng.nextBoolean() ? dy : -dy)) % h;
-            z = (z + (prng.nextBoolean() ? dz : -dz)) % d;
-            x = x < 0 ? 0 : x;
-            y = y < 0 ? 0 : y;
-            z = z < 0 ? 0 : z;
-            x = x > w ? w : x;
-            y = y > h ? h : y;
-            z = z > d ? d : z;
-        }
-
         // insert points
-        OctTree tree = new OctTree(new Box(0, 0, 0, w, h, d), n);
-        for (Sphere sphere : pts) {
-            tree.insert(sphere);
-        }
-        // tree.pprint(0, "root");
-
-        // get octants
-        LinkedList<Box> octants = new LinkedList<Box>();
-        tree.octants(octants);
+        tree = new OctTree(new Box(0, 0, 0, w, h, d), n);
+        rwalk(10, 10, 10);
 
         // set perspective
         double xrot = 5 * Math.PI / 180, yrot = 5 * Math.PI / 180, zrot = 0 * Math.PI / 180;
@@ -67,15 +45,21 @@ public class Main {
                     for (Line2D.Double line : this.project_lines(this.getAxes()))
                         G.draw(line);
                 // plot octants
-                if (this.drawOctants)
+                if (this.drawOctants) {
+                    LinkedList<Box> octants = new LinkedList<Box>();
+                    tree.octants(octants);
                     for (Box box : octants)
                         for (Line2D.Double line : this.project_lines(box.lines()))
                             G.draw(line);
+                }
                 // plot points
-                if (this.drawPoints)
+                if (this.drawPoints) {
+                    LinkedList<Shape3D> pts = new LinkedList<Shape3D>();
+                    tree.shapes(pts);
                     for (Point2D.Double p : this
-                            .project_points(Arrays.stream(pts).map(p -> p.getPoint()).collect(Collectors.toList())))
-                        G.fill(new Ellipse2D.Double(p.x, p.y, r, r));
+                            .project_points(pts.stream().map(p -> p.getPoint()).collect(Collectors.toList())))
+                        G.draw(new Ellipse2D.Double(p.x, p.y, r, r));
+                }
             }
         };
         canvas.setSize(w, h);
@@ -109,18 +93,24 @@ public class Main {
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_A:
-                        System.out.println(e.getKeyCode());
                         canvas.drawAxes = !canvas.drawAxes;
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_O:
-                        System.out.println(e.getKeyCode());
                         canvas.drawOctants = !canvas.drawOctants;
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_P:
-                        System.out.println(e.getKeyCode());
                         canvas.drawPoints = !canvas.drawPoints;
+                        canvas.repaint();
+                        break;
+                    case KeyEvent.VK_R:
+                        tree.clear();
+                        rwalk(10, 10, 10);
+                        canvas.repaint();
+                        break;
+                    case KeyEvent.VK_C:
+                        tree.clear();
                         canvas.repaint();
                         break;
                 }
@@ -140,4 +130,24 @@ public class Main {
         frame.setVisible(true);
 
     }
+
+    public static void rwalk(double dx, double dy, double dz) {
+        Random prng = new Random();
+
+        double x = prng.nextDouble() * w + 1, y = prng.nextDouble() * h + 1, z = prng.nextDouble() * d + 1;
+
+        for (int i = 0; i < N; i++) {
+            x = (x + (prng.nextBoolean() ? dx : -dx));
+            y = (y + (prng.nextBoolean() ? dy : -dy));
+            z = (z + (prng.nextBoolean() ? dz : -dz));
+            x = x < 0 ? 0 : x;
+            y = y < 0 ? 0 : y;
+            z = z < 0 ? 0 : z;
+            x = x > w ? w : x;
+            y = y > h ? h : y;
+            z = z > d ? d : z;
+            tree.insert(new Sphere(x, y, z, r));
+        }
+    }
+
 }
