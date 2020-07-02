@@ -155,6 +155,12 @@ public class OctTree {
         return this.b;
     }
 
+    public LinkedList<OctTree>  trees() {
+        LinkedList<OctTree> trees = new LinkedList<OctTree> ();
+        this.trees(trees);
+        return trees;
+    }
+
     public void trees(LinkedList<OctTree> trees) {
         if (this.subdivided) {
             this.nw1.trees(trees);

@@ -47,9 +47,7 @@ public class Main {
                     for (Line2D.Double line : this.project_lines(this.getAxes()))
                         G.draw(line);
                 // plot octants/points
-                LinkedList<OctTree> trees = new LinkedList<OctTree>();
-                tree.trees(trees);
-                for (OctTree ele : trees) {
+                for (OctTree ele : tree.trees()) {
                     if (this.drawOctants)
                         // if (!ele.elements().isEmpty())
                         for (Line2D.Double line : this.project_lines(ele.bounds().lines()))
