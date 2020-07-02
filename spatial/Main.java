@@ -18,7 +18,7 @@ public class Main {
 
     private static final int w = 1000, h = 1000, d = 1000;
 
-    private static final int dx = 1000, dy = 1000, dz = 1000;
+    private static final int dx = 10, dy = 10, dz = 10;
 
     private static final int r = 4;
 
@@ -34,7 +34,7 @@ public class Main {
         // set perspective
         double xrot = 5 * Math.PI / 180, yrot = 5 * Math.PI / 180, zrot = 0 * Math.PI / 180;
 
-        JFrame frame = new JFrame("QuadTree");
+        JFrame frame = new JFrame("OctTree");
         Canvas3D canvas = new Canvas3D() {
 
             private static final long serialVersionUID = 2581345844322652928L;
@@ -49,17 +49,15 @@ public class Main {
                 // plot octants/points
                 LinkedList<OctTree> trees = new LinkedList<OctTree>();
                 tree.trees(trees);
-                for (OctTree tree : trees) {
+                for (OctTree ele : trees) {
                     if (this.drawOctants)
-                        // if (!tree.elements().isEmpty())
-                        for (Line2D.Double line : this.project_lines(tree.bounds().lines()))
+                        // if (!ele.elements().isEmpty())
+                        for (Line2D.Double line : this.project_lines(ele.bounds().lines()))
                             G.draw(line);
                     if (this.drawPoints)
                         for (Point2D.Double p : this.project_points(
-                                tree.elements().stream().map(e -> e.getPoint()).collect(Collectors.toList()))) {
-                            System.out.println(p);
+                                ele.elements().stream().map(e -> e.getPoint()).collect(Collectors.toList())))
                             G.draw(new Ellipse2D.Double(p.x, p.y, r, r));
-                        }
                 }
             }
         };
@@ -67,6 +65,7 @@ public class Main {
         canvas.setDimensions(w, h, d);
         canvas.setPerspective(xrot, yrot, zrot);
         canvas.addKeyListener(new KeyListener() {
+
             private final double RAD = 1 * Math.PI / 180;
 
             @Override
@@ -124,20 +123,18 @@ public class Main {
             @Override
             public void keyTyped(KeyEvent e) {
             }
+
         });
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(canvas);
         frame.pack();
         frame.setVisible(true);
-
     }
 
     public static void rwalk(double dx, double dy, double dz) {
         Random prng = new Random();
-
         double x = prng.nextDouble() * w + 1, y = prng.nextDouble() * h + 1, z = prng.nextDouble() * d + 1;
-
-        Sphere sphere;
         for (int i = 0; i < N; i++) {
             x = (x + (prng.nextBoolean() ? dx : -dx));
             y = (y + (prng.nextBoolean() ? dy : -dy));
@@ -148,8 +145,7 @@ public class Main {
             x = x > w ? w : x;
             y = y > h ? h : y;
             z = z > d ? d : z;
-            sphere = new Sphere(x, y, z, r);
-            tree.insert(sphere);
+            tree.insert(new Sphere(x, y, z, r));
         }
     }
 
