@@ -60,6 +60,13 @@ public class Box implements Shape3D {
         return x && y && z;
     }
 
+    public boolean intersects(Box b) {
+        boolean x = this.getMaxX() >= b.x && this.x >= b.getMaxX();
+        boolean y = this.getMaxY() >= b.y && this.y >= b.getMaxY();
+        boolean z = this.getMaxZ() >= b.z && this.z >= b.getMaxZ();
+        return x && y && z;
+    }
+
     @Override
     public Box getBounds() {
         return this;

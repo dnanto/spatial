@@ -5,7 +5,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,6 +18,8 @@ public class Main {
 
     private static final int w = 1000, h = 1000, d = 1000;
 
+    private static final int dx = 1000, dy = 1000, dz = 1000;
+
     private static final int r = 4;
 
     private static final int n = 1;
@@ -28,7 +29,7 @@ public class Main {
     public static void main(String[] args) {
         // insert points
         tree = new OctTree(new Box(0, 0, 0, w, h, d), n);
-        rwalk(10, 10, 10);
+        rwalk(dx, dy, dz);
 
         // set perspective
         double xrot = 5 * Math.PI / 180, yrot = 5 * Math.PI / 180, zrot = 0 * Math.PI / 180;
@@ -55,8 +56,10 @@ public class Main {
                             G.draw(line);
                     if (this.drawPoints)
                         for (Point2D.Double p : this.project_points(
-                                tree.elements().stream().map(e -> e.getPoint()).collect(Collectors.toList())))
+                                tree.elements().stream().map(e -> e.getPoint()).collect(Collectors.toList()))) {
+                            System.out.println(p);
                             G.draw(new Ellipse2D.Double(p.x, p.y, r, r));
+                        }
                 }
             }
         };
@@ -104,7 +107,7 @@ public class Main {
                         break;
                     case KeyEvent.VK_R:
                         tree.clear();
-                        rwalk(10, 10, 10);
+                        rwalk(dx, dy, dz);
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_C:
@@ -134,6 +137,7 @@ public class Main {
 
         double x = prng.nextDouble() * w + 1, y = prng.nextDouble() * h + 1, z = prng.nextDouble() * d + 1;
 
+        Sphere sphere;
         for (int i = 0; i < N; i++) {
             x = (x + (prng.nextBoolean() ? dx : -dx));
             y = (y + (prng.nextBoolean() ? dy : -dy));
@@ -144,7 +148,8 @@ public class Main {
             x = x > w ? w : x;
             y = y > h ? h : y;
             z = z > d ? d : z;
-            tree.insert(new Sphere(x, y, z, r));
+            sphere = new Sphere(x, y, z, r);
+            tree.insert(sphere);
         }
     }
 
