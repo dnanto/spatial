@@ -5,6 +5,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -44,21 +45,18 @@ public class Main {
                 if (this.drawAxes)
                     for (Line2D.Double line : this.project_lines(this.getAxes()))
                         G.draw(line);
-                // plot octants
-                if (this.drawOctants) {
-                    LinkedList<Box> octants = new LinkedList<Box>();
-                    tree.octants(octants);
-                    for (Box box : octants)
-                        for (Line2D.Double line : this.project_lines(box.lines()))
+                // plot octants/points
+                LinkedList<OctTree> trees = new LinkedList<OctTree>();
+                tree.trees(trees);
+                for (OctTree tree : trees) {
+                    if (this.drawOctants)
+                        // if (!tree.elements().isEmpty())
+                        for (Line2D.Double line : this.project_lines(tree.bounds().lines()))
                             G.draw(line);
-                }
-                // plot points
-                if (this.drawPoints) {
-                    LinkedList<Shape3D> pts = new LinkedList<Shape3D>();
-                    tree.shapes(pts);
-                    for (Point2D.Double p : this
-                            .project_points(pts.stream().map(p -> p.getPoint()).collect(Collectors.toList())))
-                        G.draw(new Ellipse2D.Double(p.x, p.y, r, r));
+                    if (this.drawPoints)
+                        for (Point2D.Double p : this.project_points(
+                                tree.elements().stream().map(e -> e.getPoint()).collect(Collectors.toList())))
+                            G.draw(new Ellipse2D.Double(p.x, p.y, r, r));
                 }
             }
         };
