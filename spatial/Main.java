@@ -3,7 +3,6 @@ package spatial;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.awt.Graphics;
@@ -17,14 +16,16 @@ public class Main {
     private static OctTree tree;
 
     private static final int w = 1000, h = 1000, d = 1000;
-
     private static final int dx = 10, dy = 10, dz = 10;
 
     private static final int r = 4;
-
     private static final int n = 1;
-
     private static final int N = 1000;
+
+    private static boolean drawAxes = true;
+    private static boolean drawPoints = true;
+    private static boolean drawOctants = true;
+    private static boolean drawEmptyOctants = false;
 
     public static void main(String[] args) {
         // insert points
@@ -43,16 +44,16 @@ public class Main {
             public void paint(Graphics g) {
                 Graphics2D G = (Graphics2D) g;
                 // draw axes
-                if (this.drawAxes)
+                if (drawAxes)
                     for (Line2D.Double line : this.project_lines(this.getAxes()))
                         G.draw(line);
                 // plot octants/points
                 for (OctTree ele : tree.trees()) {
-                    if (this.drawOctants)
-                        // if (!ele.elements().isEmpty())
-                        for (Line2D.Double line : this.project_lines(ele.bounds().lines()))
-                            G.draw(line);
-                    if (this.drawPoints)
+                    if (drawOctants)
+                        if (!(drawEmptyOctants && ele.elements().isEmpty()))
+                            for (Line2D.Double line : this.project_lines(ele.bounds().lines()))
+                                G.draw(line);
+                    if (drawPoints)
                         for (Point2D.Double p : this.project_points(
                                 ele.elements().stream().map(e -> e.getPoint()).collect(Collectors.toList())))
                             G.draw(new Ellipse2D.Double(p.x, p.y, r, r));
@@ -91,24 +92,28 @@ public class Main {
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_A:
-                        canvas.drawAxes = !canvas.drawAxes;
+                        drawAxes = !drawAxes;
+                        canvas.repaint();
+                        break;
+                    case KeyEvent.VK_C:
+                        tree.clear();
+                        canvas.repaint();
+                        break;
+                    case KeyEvent.VK_F:
+                        drawEmptyOctants = !drawEmptyOctants;
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_O:
-                        canvas.drawOctants = !canvas.drawOctants;
+                        drawOctants = !drawOctants;
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_P:
-                        canvas.drawPoints = !canvas.drawPoints;
+                        drawPoints = !drawPoints;
                         canvas.repaint();
                         break;
                     case KeyEvent.VK_R:
                         tree.clear();
                         rwalk(dx, dy, dz);
-                        canvas.repaint();
-                        break;
-                    case KeyEvent.VK_C:
-                        tree.clear();
                         canvas.repaint();
                         break;
                 }
