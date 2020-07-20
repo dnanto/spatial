@@ -9,10 +9,10 @@ trying out some spatial data structures with a quick-and-dirty 3D engine...
 Key Commands:
 |key|action|
 |-|-|
-|arrows|adjust x/y rotation|
-|a|toggle axes|
-|c|clear|
-|f|only render octants with points|
-|o|toggle octant rendering|
-|p|toggle point rendering|
-|r|re-initialize random walk|
+|i/k|yaw|
+|j/l|pitch|
+|u/o|roll|
+|v|toggle octants|
+|b|toggle octants with points|
+|n|toggle points|
+|m|re-initialize random walk|
