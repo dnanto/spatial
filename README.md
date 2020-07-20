@@ -9,6 +9,9 @@ trying out some spatial data structures with a quick-and-dirty 3D engine...
 Key Commands:
 |key|action|
 |-|-|
+|w/s|up/down|
+|a/d|left/right|
+|q/e|in/out|
 |i/k|yaw|
 |j/l|pitch|
 |u/o|roll|
