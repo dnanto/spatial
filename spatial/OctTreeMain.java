@@ -1,6 +1,5 @@
 package spatial;
 
-import java.awt.Canvas;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
@@ -10,6 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
@@ -27,13 +28,13 @@ class OctTreeMain {
     private final static double RAD = 1 * Math.PI / 180;
     private final static double PI2 = 2 * Math.PI;
 
-    private final static int n = 10;
+    private final static int n = 100;
 
-    private final static int N = 5000;
+    private final static int N = 100000;
 
-    private final static double dx = 10;
-    private final static double dy = 10;
-    private final static double dz = 10;
+    private final static double dx = 0.5;
+    private final static double dy = 0.5;
+    private final static double dz = 0.5;
 
     private final static int r = 5;
 
@@ -130,20 +131,20 @@ class OctTreeMain {
         rwalk();
         update();
 
-        Canvas canvas = new Canvas() {
+        JPanel panel = new JPanel() {
             private static final long serialVersionUID = 2285823752059566895L;
 
             @Override
             public void paint(Graphics g) {
                 Graphics2D G = (Graphics2D) g;
                 if (drawPoints)
-                    tree.traverse().map(OctTree::elements).flatMap(Collection::stream).filter(Sphere.class::isInstance)
+                    tree.traverse().parallel().map(OctTree::elements).flatMap(Collection::stream).filter(Sphere.class::isInstance)
                             .map(Sphere.class::cast).forEach(e -> {
                                 double[][] x = mmult(P, e.getPoint().homogenize());
                                 G.draw(new Ellipse2D.Double(x[0][0] + w / 2, x[1][0] + h / 2, e.getR(), e.getR()));
                             });
                 if (drawOctants)
-                    tree.traverse().forEach(e -> {
+                    tree.traverse().parallel().forEach(e -> {
                         if (drawEmptyOctants || !e.elements().isEmpty())
                             Arrays.stream(e.bounds().lines()).forEach(f -> {
                                 double[][] x1 = mmult(P, f[0].homogenize()), x2 = mmult(P, f[1].homogenize());
@@ -153,8 +154,8 @@ class OctTreeMain {
                     });
             }
         };
-        canvas.setSize(w, h);
-        canvas.addKeyListener(new KeyListener() {
+        panel.setDoubleBuffered(true);
+        panel.addKeyListener(new KeyListener() {
 
             @Override
             public void keyPressed(KeyEvent e) {
@@ -227,26 +228,26 @@ class OctTreeMain {
                         break;
                     case KeyEvent.VK_V:
                         drawEmptyOctants = !drawEmptyOctants;
-                        canvas.repaint();
+                        panel.repaint();
                         break;
                     case KeyEvent.VK_B:
                         drawOctants = !drawOctants;
-                        canvas.repaint();
+                        panel.repaint();
                         break;
                     case KeyEvent.VK_N:
                         drawPoints = !drawPoints;
-                        canvas.repaint();
+                        panel.repaint();
                         break;
                     case KeyEvent.VK_M:
                         tree.clear();
                         rwalk();
-                        canvas.repaint();
+                        panel.repaint();
                         break;
 
                 }
                 if (recalc) {
                     update();
-                    canvas.repaint();
+                    panel.repaint();
                 }
             }
 
@@ -259,11 +260,14 @@ class OctTreeMain {
             }
 
         });
+        panel.setFocusable(true);
+        panel.requestFocusInWindow();
 
         JFrame frame = new JFrame(":D");
+        frame.setSize(w, h);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(canvas);
-        frame.pack();
+        frame.getContentPane().add(panel);
+        frame.add(panel);
         frame.setVisible(true);
     }
 }
