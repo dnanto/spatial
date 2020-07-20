@@ -137,18 +137,18 @@ class OctTreeMain {
             public void paint(Graphics g) {
                 Graphics2D G = (Graphics2D) g;
                 if (drawPoints)
-                    tree.traverse().map(e -> e.elements()).flatMap(Collection::stream).filter(e -> e instanceof Sphere)
-                            .forEach(e -> {
-                                Sphere s = (Sphere) e;
+                    tree.traverse().map(OctTree::elements).flatMap(Collection::stream).filter(Sphere.class::isInstance)
+                            .map(Sphere.class::cast).forEach(e -> {
                                 double[][] x = mmult(P, e.getPoint().homogenize());
-                                G.draw(new Ellipse2D.Double(x[0][0] + w / 2, x[1][0] + h / 2, s.getR(), s.getR()));
+                                G.draw(new Ellipse2D.Double(x[0][0] + w / 2, x[1][0] + h / 2, e.getR(), e.getR()));
                             });
                 if (drawOctants)
                     tree.traverse().forEach(e -> {
                         if (drawEmptyOctants || !e.elements().isEmpty())
                             Arrays.stream(e.bounds().lines()).forEach(f -> {
                                 double[][] x1 = mmult(P, f[0].homogenize()), x2 = mmult(P, f[1].homogenize());
-                                G.draw(new Line2D.Double(x1[0][0] + w / 2, x1[1][0] + h / 2, x2[0][0] + w / 2, x2[1][0] + h / 2));
+                                G.draw(new Line2D.Double(x1[0][0] + w / 2, x1[1][0] + h / 2, x2[0][0] + w / 2,
+                                        x2[1][0] + h / 2));
                             });
                     });
             }
