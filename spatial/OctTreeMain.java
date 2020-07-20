@@ -160,6 +160,23 @@ class OctTreeMain {
             public void keyPressed(KeyEvent e) {
                 boolean recalc = false;
                 switch (e.getKeyCode()) {
+                    case KeyEvent.VK_C:
+                        θ = ψ = φ = 0;
+                        mclr(K);
+                        K[0][0] = K[1][1] = K[2][2] = 1;
+                        C[0] = C[1] = C[2] = 0;
+                        recalc = true;
+                        break;
+                    case KeyEvent.VK_Z:
+                        K[0][0] += 1;
+                        K[1][1] += 1;
+                        recalc = true;
+                        break;
+                    case KeyEvent.VK_X:
+                        K[0][0] -= 1;
+                        K[1][1] -= 1;
+                        recalc = true;
+                        break;
                     case KeyEvent.VK_A:
                         C[0] += 10;
                         recalc = true;

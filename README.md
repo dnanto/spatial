@@ -15,6 +15,8 @@ Key Commands:
 |i/k|yaw|
 |j/l|pitch|
 |u/o|roll|
+|z/x|zoom|
+|c|reset view|
 |v|toggle octants|
 |b|toggle octants with points|
 |n|toggle points|
