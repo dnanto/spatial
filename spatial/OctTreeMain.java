@@ -5,12 +5,13 @@ import java.util.Collection;
 import java.util.Random;
 import java.awt.geom.Line2D;
 import java.util.stream.Collectors;
+import java.awt.AlphaComposite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import java.awt.geom.Path2D;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
@@ -36,7 +37,7 @@ class OctTreeMain {
     private final static double dy = 0.5;
     private final static double dz = 0.5;
 
-    private final static int r = 5;
+    private final static int r = 2;
 
     private static boolean drawPoints = true;
     private static boolean drawOctants = true;
@@ -137,20 +138,32 @@ class OctTreeMain {
             @Override
             public void paint(Graphics g) {
                 Graphics2D G = (Graphics2D) g;
+                // points
                 if (drawPoints)
-                    tree.traverse().parallel().map(OctTree::elements).flatMap(Collection::stream).filter(Sphere.class::isInstance)
-                            .map(Sphere.class::cast).forEach(e -> {
+                    tree.traverse().parallel().map(OctTree::elements).flatMap(Collection::stream)
+                            .filter(Sphere.class::isInstance).map(Sphere.class::cast).forEach(e -> {
                                 double[][] x = mmult(P, e.getPoint().homogenize());
                                 G.draw(new Ellipse2D.Double(x[0][0] + w / 2, x[1][0] + h / 2, e.getR(), e.getR()));
                             });
+                // octants
+                G.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.015f));
                 if (drawOctants)
                     tree.traverse().parallel().forEach(e -> {
-                        if (drawEmptyOctants || !e.elements().isEmpty())
-                            Arrays.stream(e.bounds().lines()).forEach(f -> {
-                                double[][] x1 = mmult(P, f[0].homogenize()), x2 = mmult(P, f[1].homogenize());
-                                G.draw(new Line2D.Double(x1[0][0] + w / 2, x1[1][0] + h / 2, x2[0][0] + w / 2,
-                                        x2[1][0] + h / 2));
-                            });
+                        Path2D.Double path = new Path2D.Double();
+                        for (Point3D[] pts : e.bounds().facePaths()) {
+                            double[][] p = new double[3][1];
+                            mmult(P, pts[0].homogenize(), p);
+                            path.moveTo(p[0][0] + w / 2, p[1][0] + h / 2);
+                            for (int i = 1; i < pts.length; i++) {
+                                mclr(p);
+                                mmult(P, pts[i].homogenize(), p);
+                                path.lineTo(p[0][0] + w / 2, p[1][0] + h / 2);
+                            }
+                            path.closePath();
+                            G.fill(path);
+                            G.draw(path);
+                            path.reset();
+                        }
                     });
             }
         };
