@@ -146,7 +146,7 @@ class OctTreeMain {
                                 G.draw(new Ellipse2D.Double(x[0][0] + w / 2, x[1][0] + h / 2, e.getR(), e.getR()));
                             });
                 // octants
-                G.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.015f));
+                G.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.005f));
                 if (drawOctants)
                     tree.traverse().parallel().forEach(e -> {
                         Path2D.Double path = new Path2D.Double();
