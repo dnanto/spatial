@@ -3,7 +3,6 @@ package spatial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
-import java.awt.geom.Line2D;
 import java.util.stream.Collectors;
 import java.awt.AlphaComposite;
 import java.awt.Graphics;
