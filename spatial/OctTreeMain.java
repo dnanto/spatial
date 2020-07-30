@@ -148,20 +148,22 @@ class OctTreeMain {
                 G.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.005f));
                 if (drawOctants)
                     tree.traverse().parallel().forEach(e -> {
-                        Path2D.Double path = new Path2D.Double();
-                        for (Point3D[] pts : e.bounds().facePaths()) {
-                            double[][] p = new double[3][1];
-                            mmult(P, pts[0].homogenize(), p);
-                            path.moveTo(p[0][0] + w / 2, p[1][0] + h / 2);
-                            for (int i = 1; i < pts.length; i++) {
-                                mclr(p);
-                                mmult(P, pts[i].homogenize(), p);
-                                path.lineTo(p[0][0] + w / 2, p[1][0] + h / 2);
+                        if (e.elements().size() > 0 || drawEmptyOctants) {
+                            Path2D.Double path = new Path2D.Double();
+                            for (Point3D[] pts : e.bounds().facePaths()) {
+                                double[][] p = new double[3][1];
+                                mmult(P, pts[0].homogenize(), p);
+                                path.moveTo(p[0][0] + w / 2, p[1][0] + h / 2);
+                                for (int i = 1; i < pts.length; i++) {
+                                    mclr(p);
+                                    mmult(P, pts[i].homogenize(), p);
+                                    path.lineTo(p[0][0] + w / 2, p[1][0] + h / 2);
+                                }
+                                path.closePath();
+                                G.fill(path);
+                                G.draw(path);
+                                path.reset();
                             }
-                            path.closePath();
-                            G.fill(path);
-                            G.draw(path);
-                            path.reset();
                         }
                     });
             }
