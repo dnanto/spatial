@@ -147,8 +147,8 @@ class OctTreeMain {
                             });
                 // octants
                 G.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f));
-                Color[] colors = new Color[] { Color.GRAY, Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN,
-                        Color.CYAN, Color.BLUE, Color.PINK, Color.MAGENTA };
+                Color[] colors = new Color[] { Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
+                        Color.BLUE, Color.PINK, Color.MAGENTA };
                 if (drawOctants)
                     tree.traverse().parallel().forEach(e -> {
                         if (e.elements().size() > 0 || drawEmptyOctants) {
@@ -163,7 +163,7 @@ class OctTreeMain {
                                     path.lineTo(p[0][0] + w / 2, p[1][0] + h / 2);
                                 }
                                 path.closePath();
-                                G.setColor(colors[e.bounds().getPoint().getOctant() + 1]);
+                                G.setColor(colors[e.bounds().getCenter().getOctant()]);
                                 G.fill(path);
                                 G.setColor(Color.BLACK);
                                 G.draw(path);
